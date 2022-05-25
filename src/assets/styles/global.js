@@ -8,8 +8,9 @@ export default createGlobalStyle`
         font-family: 'Sora', sans-serif;
     }
     body{
-        background: ${(props) => props.theme.backgroundColor};
         font-size: 16px;
+        background: ${({ theme }) => theme.colors.background};
+        color:  ${({ theme }) => theme.colors.gray[900]};
 
     }
     button{
