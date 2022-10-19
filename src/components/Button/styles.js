@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-export default styled.button`
+export const StyledButton = styled.button`
     height: 52px;
     padding: 0 16px;
     background:  ${({ theme }) => theme.colors.primary.main};
@@ -10,7 +10,10 @@ export default styled.button`
     font-weight: bold;
     border-radius: 4px;
     color: #fff;
-
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
     transition: background 0.2s ease-in;
     &:hover{
         background:  ${({ theme }) => theme.colors.primary.light};

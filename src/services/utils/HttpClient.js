@@ -9,7 +9,7 @@ class HttpClient {
     return this.makeRequest(path, { method: 'GET' , headers: options?.headers});
   }
   post(path, options) {
-    return this.makeRequest(path, { method: 'POST', body: options?.body, headers: options?.headers })
+    return this.makeRequest(path, { method: 'POST', body: options, headers: options?.headers })
   }
   async makeRequest(path, options){
     await delay(1000);

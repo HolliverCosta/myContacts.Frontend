@@ -11,7 +11,6 @@ export default function Home() {
         phone: formData.phone,
         category_id: formData.categoryId,
       }
-  
       const response = await ContactsService.createContact(contact);
   
       console.log(response)
