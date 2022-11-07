@@ -1,6 +1,6 @@
 import { useParams, useHistory } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
-
+import useSafeAsyncAction from '../../hooks/useSafeAsyncAction';
 import PageHeader from '../../components/PageHeader';
 import ContactForm from '../../components/ContactForm';
 
@@ -16,26 +16,29 @@ export default function Home() {
 
   const params = useParams();
   const history = useHistory();
+  const safeAsyncAction = useSafeAsyncAction();
 
   useEffect(() => {
    async function loadContact(){
     try {
       const contact = await ContactsService.getContactById(params.id);
-
-      contactFormRef.current.setFieldsValues(contact);
-
-      setIsLoading(false);
-      setContactName(contact.name)
-    } catch (error) {
-      history.push('/');
-      toast({
-        type: 'danger',
-        text: 'Contato não encontrado!'
+      safeAsyncAction(() => {
+        contactFormRef.current.setFieldsValues(contact);
+        setIsLoading(false);
+        setContactName(contact.name);
+      });
+    } catch{
+      safeAsyncAction(() => {
+        history.push('/');
+        toast({
+          type: 'danger',
+          text: 'Contato não encontrado!'
+        });
       });
     } 
    }
    loadContact()
-  }, [params.id, history]);
+  }, [params.id, history, safeAsyncAction]);
   async function handleSubmit(formData){
     try {
       const contact = {
@@ -65,8 +68,13 @@ export default function Home() {
   return (
     <>
       <Loader isLoading={isLoading}/>
-      <PageHeader title={isLoading ? 'Carregando...' : `Editar ${contactName }`} />
-      <ContactForm buttonLabel="Salvar alterações" onSubmit={handleSubmit} ref={contactFormRef}/>
+      <PageHeader 
+      title={isLoading ? 'Carregando...' : `Editar ${contactName }`} 
+      />
+      <ContactForm 
+      buttonLabel="Salvar alterações" 
+      onSubmit={handleSubmit} 
+      ref={contactFormRef}/>
     </>
 
   );
