@@ -15,8 +15,10 @@ class ContactsService {
     return this.httpClient.post(`/contacts`, contact);
   }
   updateContact(id, contact){
-    console.log(contact)
     return this.httpClient.put(`/contacts/${id}`, { body: contact })
+  }
+  deleteContact(id){
+    return this.httpClient.delete(`/contacts/${id}`)
   }
 }
 

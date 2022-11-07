@@ -15,6 +15,9 @@ class HttpClient {
     console.log(options)
     return this.makeRequest(path, { method: 'PUT', body: options?.body, headers: options?.headers })
   }
+  delete(path, options) {
+    return this.makeRequest(path, { method: 'DELETE', headers: options?.headers })
+  }
   async makeRequest(path, options){
     await delay(1000);
     
@@ -39,7 +42,7 @@ class HttpClient {
 
     let responseBody = null;
 
-    if(contentType.includes('application/json')){
+    if(contentType?.includes('application/json')){
       responseBody = await response.json();
     }
     
