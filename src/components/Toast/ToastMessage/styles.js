@@ -12,6 +12,18 @@ const messageIn = keyframes`
     }
 `;
 
+const messageOut = keyframes`
+    from {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+
+`;
+
 const containerVariants = {
   default: css`
     background: ${({ theme }) => theme.colors.primary.main};
@@ -33,7 +45,14 @@ export const Container = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  animation: ${messageIn} 0.3s;
+  animation: ${messageIn} 0.3s forwards;
+
+  ${({ isLeaving }) =>
+    isLeaving &&
+    css`
+      animation: ${messageOut} 0.2s forwards;
+    `}
+
   ${({ type }) => containerVariants[type] || containerVariants.default}
 
   img {

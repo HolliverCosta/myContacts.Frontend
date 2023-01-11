@@ -1,39 +1,40 @@
-import { useState, useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import ToastMessage from "../ToastMessage";
 import { Container } from "./styles";
 import { toastEventManager } from "../../../utils/toast";
+import useAnimatedList from "../../../hooks/useAnimatedList";
 
 export default function ToastContainer() {
-    const [messages, setMessages] = useState([]);
+  const {
+    setItems: setMessages,
+    handleRemoveItem,
+    renderList,
+  } = useAnimatedList([]);
 
-    useEffect(() => {
-        function handleAddToast({ type, text, duration }){
-            setMessages((prevState) => [
-                ...prevState,
-                { id: Math.random(), type, text, duration }
-            ])
-        }
-        toastEventManager.on('addtoast', handleAddToast)
-        return () => {
-            toastEventManager.removeListener('addtoast', handleAddToast);
-        }
-    }, []);
+  useEffect(() => {
+    function handleAddToast({ type, text, duration }) {
+      setMessages((prevState) => [
+        ...prevState,
+        { id: Math.random(), type, text, duration },
+      ]);
+    }
+    toastEventManager.on("addtoast", handleAddToast);
+    return () => {
+      toastEventManager.removeListener("addtoast", handleAddToast);
+    };
+  }, [setMessages]);
 
-    const handleRemoveMessage= useCallback((id) => {
-        setMessages((prevState) => prevState.filter(
-            (message) => message.id !== id,
-        ))
-    }, []);
-
-    return (
-        <Container >
-            {messages.map((message) => (
-                <ToastMessage
-                    key={message.id}
-                    message={message}
-                    onRemoveMessage={handleRemoveMessage}
-                />
-            ))}
-        </Container>
-    );
+  return (
+    <Container>
+      {renderList((message, { isLeaving, animatedRef }) => (
+        <ToastMessage
+          key={message.id}
+          message={message}
+          onRemoveMessage={handleRemoveItem}
+          isLeaving={isLeaving}
+          animatedRef={animatedRef}
+        />
+      ))}
+    </Container>
+  );
 }
