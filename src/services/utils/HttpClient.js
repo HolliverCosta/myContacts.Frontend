@@ -1,35 +1,45 @@
-import delay from '../../utils/delay';
-import APIError from '../../errors/APIError';
+import delay from "../../utils/delay";
+import APIError from "../../errors/APIError";
 class HttpClient {
   constructor(baseURL) {
     this.baseURL = baseURL;
   }
 
   get(path, options) {
-    return this.makeRequest(path, { method: 'GET' , headers: options?.headers});
+    return this.makeRequest(path, { method: "GET", headers: options?.headers });
   }
   post(path, options) {
-    return this.makeRequest(path, { method: 'POST', body: options, headers: options?.headers })
+    return this.makeRequest(path, {
+      method: "POST",
+      body: options,
+      headers: options?.headers,
+    });
   }
   put(path, options) {
-    console.log(options)
-    return this.makeRequest(path, { method: 'PUT', body: options?.body, headers: options?.headers })
+    return this.makeRequest(path, {
+      method: "PUT",
+      body: options?.body,
+      headers: options?.headers,
+    });
   }
   delete(path, options) {
-    return this.makeRequest(path, { method: 'DELETE', headers: options?.headers })
+    return this.makeRequest(path, {
+      method: "DELETE",
+      headers: options?.headers,
+    });
   }
-  async makeRequest(path, options){
+  async makeRequest(path, options) {
     await delay(1000);
-    
+
     const headers = new Headers();
 
-    if(options.body){
-      headers.append('Content-Type','application/json');
+    if (options.body) {
+      headers.append("Content-Type", "application/json");
     }
-    if(options.headers){
+    if (options.headers) {
       Object.entries(options.headers).forEach(([name, value]) => {
         headers.append(name, value);
-      })
+      });
     }
 
     const response = await fetch(`${this.baseURL}${path}`, {
@@ -38,18 +48,18 @@ class HttpClient {
       headers,
     });
 
-    const contentType = response.headers.get('Content-Type');
+    const contentType = response.headers.get("Content-Type");
 
     let responseBody = null;
 
-    if(contentType?.includes('application/json')){
+    if (contentType?.includes("application/json")) {
       responseBody = await response.json();
     }
-    
-    if(response.ok){
+
+    if (response.ok) {
       return responseBody;
     }
-    
+
     throw new APIError(response, responseBody);
   }
 }

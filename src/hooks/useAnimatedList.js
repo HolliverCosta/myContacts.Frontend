@@ -14,8 +14,6 @@ export default function useAnimatedList(initialValue = []) {
     animationEndListeners.current.delete(itemId);
     animatedRefs.current.delete(itemId);
 
-    console.log({ animatedRefs, animationEndListeners });
-
     setItems((prevState) => prevState.filter((item) => item.id !== itemId));
     setPendingRemovalItemsIds((prevState) =>
       prevState.filter((id) => id !== itemId)
