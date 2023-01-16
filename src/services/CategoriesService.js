@@ -2,7 +2,7 @@ import HttpClient from "./utils/HttpClient";
 import CategoryMapper from "./mappers/CategoryMapper";
 class CategoriesService {
   constructor() {
-    this.httpClient = new HttpClient("http://localhost:3004");
+    this.httpClient = new HttpClient("http://localhost:3001");
   }
 
   async listCategories() {

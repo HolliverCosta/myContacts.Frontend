@@ -2,7 +2,7 @@ import HttpClient from "./utils/HttpClient";
 import ContactMapper from "../services/mappers/ContactMapper";
 class ContactsService {
   constructor() {
-    this.httpClient = new HttpClient("http://localhost:3004");
+    this.httpClient = new HttpClient("http://localhost:3001");
   }
 
   async listContacts(orderBy = "asc") {
