@@ -1,60 +1,71 @@
-import isEmailValid from '../../utils/isEmailValid';
-import useErrors from '../../hooks/useErrors';
-import formatPhone from '../../utils/formatPhone';
-import CategoriesService from '../../services/CategoriesService';
-import { useState, useEffect, useImperativeHandle } from 'react';
+import isEmailValid from "../../utils/isEmailValid";
+import useErrors from "../../hooks/useErrors";
+import formatPhone from "../../utils/formatPhone";
+import CategoriesService from "../../services/CategoriesService";
+import { useState, useEffect, useImperativeHandle } from "react";
 
-export default function useContactForm(onSubmit, ref){
-    const [categories, setCategories] = useState([]);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [categoryId, setCategoryId] = useState('');
+export default function useContactForm(onSubmit, ref) {
+  const [categories, setCategories] = useState([]);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const {
-    setError, removeError, getErrorMessageByFieldName, errors,
-  } = useErrors();
+  const { setError, removeError, getErrorMessageByFieldName, errors } =
+    useErrors();
 
-  const isFormValid = (name && errors.length === 0);
+  const isFormValid = name && errors.length === 0;
 
-  useImperativeHandle(ref, () => ({
-    setFieldsValues: (contact) => {
-      setName(contact.name ?? '');
-      setEmail(contact.email ?? '');
-      setPhone(formatPhone(contact.phone ?? ''));
-      setCategoryId(contact.category.id ?? '');
-    },
-    resetFields: () => {
-      setName('');
-      setEmail('');
-      setPhone('');
-      setCategoryId('');
-    },
-  }), []);
+  useImperativeHandle(
+    ref,
+    () => ({
+      setFieldsValues: (contact) => {
+        setName(contact.name ?? "");
+        setEmail(contact.email ?? "");
+        setPhone(formatPhone(contact.phone ?? ""));
+        setCategoryId(contact.category.id ?? "");
+      },
+      resetFields: () => {
+        setName("");
+        setEmail("");
+        setPhone("");
+        setCategoryId("");
+      },
+    }),
+    []
+  );
 
   useEffect(() => {
-    async function loadCategories(){
+    const controller = new AbortController();
+    async function loadCategories() {
       try {
-        const categoriesList = await CategoriesService.listCategories();
+        const categoriesList = await CategoriesService.listCategories(
+          controller.signal
+        );
 
         setCategories(categoriesList);
-      } catch{} finally {
-        setIsLoadingCategories(false)
+      } catch {
+      } finally {
+        setIsLoadingCategories(false);
       }
     }
 
     loadCategories();
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const handleNameChange = (event) => {
     setName(event.target.value);
 
     if (!event.target.value) {
-      setError({ field: 'name', message: 'nome e obrigatorio' });
+      setError({ field: "name", message: "nome e obrigatorio" });
     } else {
-      removeError('name');
+      removeError("name");
     }
   };
 
@@ -62,9 +73,9 @@ export default function useContactForm(onSubmit, ref){
     setEmail(event.target.value);
 
     if (event.target.value && !isEmailValid(event.target.value)) {
-      setError({ field: 'email', message: 'E-mail invalido' });
+      setError({ field: "email", message: "E-mail invalido" });
     } else {
-      removeError('email');
+      removeError("email");
     }
   };
 
@@ -76,9 +87,12 @@ export default function useContactForm(onSubmit, ref){
     event.preventDefault();
 
     setIsSubmitting(true);
-    
+
     await onSubmit({
-      name, email, phone, categoryId,
+      name,
+      email,
+      phone,
+      categoryId,
     });
 
     setIsSubmitting(false);

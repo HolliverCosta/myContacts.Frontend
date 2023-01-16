@@ -28,25 +28,39 @@ export default function useHome() {
     [contacts, deferredSearchTerm]
   );
 
-  const loadContacts = useCallback(async () => {
-    try {
-      setIsLoading(true);
+  const loadContacts = useCallback(
+    async (signal) => {
+      try {
+        setIsLoading(true);
 
-      const contactsList = await ContactsService.listContacts(orderBy);
+        const contactsList = await ContactsService.listContacts(
+          orderBy,
+          signal
+        );
 
-      setHasError(false);
+        setHasError(false);
 
-      setContacts(contactsList);
-    } catch (error) {
-      setContacts([]);
-      setHasError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [orderBy]);
+        setContacts(contactsList);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+        setContacts([]);
+        setHasError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [orderBy]
+  );
 
   useEffect(() => {
-    loadContacts();
+    const controller = new AbortController();
+    loadContacts(controller.signal);
+
+    return () => {
+      controller.abort();
+    };
   }, [loadContacts]);
 
   function handleTryAgain() {
